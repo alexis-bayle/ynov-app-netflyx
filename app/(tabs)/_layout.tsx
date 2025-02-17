@@ -26,6 +26,18 @@ export default function TabLayout() {
         // On applique notre dégradé de fond
         tabBarBackground: () => (
           <View style={{ flex: 1 }}>
+            {/* Ligne de bordure blanche en haut */}
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 2,
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                zIndex: 2,
+              }}
+            />
             {/* Dégradé en arrière-plan */}
             <LinearGradient
               colors={['#0B9E9F', '#0A0A0A']}
