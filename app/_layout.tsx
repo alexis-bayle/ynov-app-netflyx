@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@shopify/restyle';
 import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { theme } from 'theme';
 
 export const unstable_settings = {
@@ -10,9 +11,13 @@ export const unstable_settings = {
 export default function RootLayout() {
   return (
     <ThemeProvider theme={theme}>
+      <StatusBar translucent backgroundColor="transparent" style="light" />
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="modal"
+          options={{ headerShown: false, presentation: 'fullScreenModal' }}
+        />
       </Stack>
     </ThemeProvider>
   );

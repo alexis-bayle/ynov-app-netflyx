@@ -7,11 +7,15 @@ type NamedStyles<T> = {
 
 const palette = {
   gray: '#808080',
-  blue: '#007AFF',
   darkGray: '#38434D',
   white: '#FFFFFF',
   black: '#000000',
-  purple: '#6366F1',
+  primaryBg: '#171719',
+
+  orange: '#F2A33A',
+  lightBlue: '#00FAFE',
+  lightGreen: '09FACA',
+  purple: '#FF35B8',
 };
 
 const theme = createTheme({
