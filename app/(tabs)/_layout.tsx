@@ -69,24 +69,50 @@ export default function TabLayout() {
             const OUTER_SIZE = SIZE + BORDER_WIDTH * 2; // Taille totale avec border
 
             return (
-              <View
+              <LinearGradient
+                colors={['#0B9E9F', '#0A0A0A']}
+                start={{ x: 0, y: 1 }}
+                end={{ x: 1, y: 0 }}
                 style={{
                   width: SIZE,
-                  height: SIZE,
-                  borderRadius: SIZE / 2,
-                  backgroundColor: 'black',
-                  justifyContent: 'center',
-                  alignItems: 'center',
                   marginBottom: 28,
-                }}>
-                <Image
-                  source={require('../../assets/plus-bottom-bar.png')}
+                  height: SIZE,
+                  borderRadius: SIZE / 2}}>
+                <View
                   style={{
-                    width: SIZE * 2.5, // Ajustez si besoin
-                    height: SIZE * 2.5,
-                  }}
-                />
-              </View>
+                    width: SIZE,
+                    height: SIZE,
+                    borderRadius: SIZE / 2,
+                    overflow: 'hidden',
+                    position: 'absolute',
+                  }}>
+                  <BlurView
+                    tint="dark"
+                    intensity={80}
+                    style={{
+                      width: SIZE,
+                      height: SIZE,
+                    }}
+                  />
+                </View>
+                <View
+                  style={{
+                    width: SIZE,
+                    height: SIZE,
+                    borderRadius: SIZE / 2,
+                    backgroundColor: 'transparent',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Image
+                    source={require('../../assets/plus-bottom-bar.png')}
+                    style={{
+                      width: SIZE * 2.5, // Ajustez si besoin
+                      height: SIZE * 2.5,
+                    }}
+                  />
+                </View>
+              </LinearGradient>
             );
           },
         }}
