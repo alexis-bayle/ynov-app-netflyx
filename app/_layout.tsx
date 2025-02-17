@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@shopify/restyle';
 import { Stack } from 'expo-router';
 import { theme } from 'theme';
+import { StatusBar } from "expo-status-bar";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
@@ -10,6 +11,7 @@ export const unstable_settings = {
 export default function RootLayout() {
   return (
     <ThemeProvider theme={theme}>
+      <StatusBar translucent backgroundColor="transparent" style="light" />
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
