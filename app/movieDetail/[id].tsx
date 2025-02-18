@@ -20,7 +20,7 @@ export default function MovieDetail() {
   const [posterHeight, setPosterHeight] = useState(win.height * 0.6); // Default height
   const params = useLocalSearchParams();
 
-  useEffect(() => {
+  function getData() {
     MovieService.getMovieDetails(Number(params.id))
       .then((response) => {
         setMovieData(response);
@@ -47,11 +47,15 @@ export default function MovieDetail() {
             setIsLoading(false);
           });
       });
+  }
+
+  useEffect(() => {
+    getData();
   }, []);
 
   if (isLoading) {
     return (
-      <Box flex={1} justifyContent="center" alignItems="center" backgroundColor='primaryBg'>
+      <Box flex={1} justifyContent="center" alignItems="center" backgroundColor="primaryBg">
         <Text>Loading...</Text>
       </Box>
     );
@@ -69,7 +73,7 @@ export default function MovieDetail() {
 
       <Box flex={1} backgroundColor="primaryBg" alignItems="center" style={styles.mainContainer}>
         <Text variant="title" color="white" textAlign="center" style={styles.title} fontSize={20}>
-          {movieData?.original_title}
+          {movieData?.title}
         </Text>
         <Box
           marginTop="m_16"
