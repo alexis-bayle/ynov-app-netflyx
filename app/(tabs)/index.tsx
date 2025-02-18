@@ -1,10 +1,9 @@
 import { Stack } from 'expo-router';
 import * as NavigationBar from 'expo-navigation-bar';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 
 import { ScreenContent } from '~/components/ScreenContent';
 import {useEffect} from "react";
-import { LinearGradient } from "expo-linear-gradient";
 
 export default function Home() {
   useEffect(() => {
@@ -15,26 +14,31 @@ export default function Home() {
   return (
     <>
       <Stack.Screen options={{ title: 'Home', headerShown: false }} />
-      <LinearGradient
-        colors={['#0B9E9F', '#0A0A0A']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.linearGradient}>
-
-        <View style={styles.container}>
+      <View style={styles.parent}>
+        <Image
+          source={require('assets/home-background.png')}
+          style={styles.backgroundImage}
+        />
+        <View style={styles.content}>
           <ScreenContent path="app/(tabs)/index.tsx" title="Home" />
         </View>
-      </LinearGradient>
+      </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  parent: {
+    flex: 1,
+    backgroundColor: '#171719',
+  },
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject, // position absolute, top: 0, left: 0, bottom: 0, right: 0
+    zIndex: 1, // se place au-dessus du background
+  },
+  content: {
     flex: 1,
     padding: 24,
-  },
-  linearGradient: {
-    flex: 1,
+    zIndex: 2, // le contenu se superpose à l'image
   },
 });

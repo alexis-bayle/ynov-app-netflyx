@@ -25,7 +25,7 @@ export default function TabLayout() {
         },
         // On applique notre dégradé de fond
         tabBarBackground: () => (
-          <View style={{ flex: 1 }}>
+          <View style={StyleSheet.absoluteFillObject}>
             {/* Ligne de bordure blanche en haut */}
             <View
               style={{
@@ -34,19 +34,12 @@ export default function TabLayout() {
                 left: 0,
                 right: 0,
                 height: 2,
-                backgroundColor: 'rgba(255,255,255,0.2)',
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
                 zIndex: 2,
               }}
             />
-            {/* Dégradé en arrière-plan */}
-            <LinearGradient
-              colors={['#0B9E9F', '#0A0A0A']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={StyleSheet.absoluteFill}
-            />
-            {/* Blur par-dessus (tu peux jouer sur tint / intensity) */}
-            <BlurView tint="dark" intensity={25} style={StyleSheet.absoluteFill} />
+            {/* Blur par-dessus */}
+            <BlurView tint="light" intensity={10} style={StyleSheet.absoluteFillObject} />
           </View>
         ),
         tabBarActiveTintColor: '#fff',
