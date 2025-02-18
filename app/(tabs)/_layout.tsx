@@ -5,6 +5,7 @@ import { View, StyleSheet, Image } from 'react-native';
 
 import { HeaderButton } from '~/components/HeaderButton';
 import { TabBarIcon } from '~/components/TabBarIcon';
+import { TabBarIconSvg } from "~/components/TabBarIconSvg";
 
 
 export default function TabLayout() {
@@ -51,7 +52,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIconSvg name="home" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
               <HeaderButton />
@@ -63,7 +64,7 @@ export default function TabLayout() {
         name="Movies"
         options={{
           title: 'Movies',
-          tabBarIcon: ({ color }) => <TabBarIcon name="youtube-play" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIconSvg name="play" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -128,14 +129,14 @@ export default function TabLayout() {
         name="My-Favorites"
         options={{
           title: 'My-Favorites',
-          tabBarIcon: ({ color }) => <TabBarIcon name="folder" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIconSvg name="folder" color={color} />,
         }}
       />
       <Tabs.Screen
         name="My-Download"
         options={{
           title: 'My-Download',
-          tabBarIcon: ({ color }) => <TabBarIcon name="arrow-circle-down" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIconSvg name="arrow" color={color} />,
         }}
       />
     </Tabs>

@@ -1,9 +1,9 @@
 import { Stack } from 'expo-router';
 import * as NavigationBar from 'expo-navigation-bar';
-import { StyleSheet, View, Image } from 'react-native';
-
-import { ScreenContent } from '~/components/ScreenContent';
+import { StyleSheet, View, Image, Text } from 'react-native';
 import {useEffect} from "react";
+import { SearchInput } from "~/components/home/SearchInput";
+import { NewMovies } from "~/components/home/NewMovies";
 
 export default function Home() {
   useEffect(() => {
@@ -20,8 +20,18 @@ export default function Home() {
           style={styles.backgroundImage}
         />
         <View style={styles.content}>
-          <ScreenContent path="app/(tabs)/index.tsx" title="Home" />
+          <View style={styles.titleSection}>
+            <Text style={styles.title}>What would you like to watch?</Text>
+          </View>
+
+          <View style={styles.searchContainer}>
+            <SearchInput />
+          </View>
         </View>
+        <View style={styles.newMoviesContainer}>
+          <NewMovies />
+        </View>
+
       </View>
     </>
   );
@@ -37,8 +47,28 @@ const styles = StyleSheet.create({
     zIndex: 1, // se place au-dessus du background
   },
   content: {
-    flex: 1,
     padding: 24,
     zIndex: 2, // le contenu se superpose à l'image
+  },
+  titleSection: {
+    alignItems: 'center',
+    marginTop: '20%',
+    marginLeft: '20%',
+    marginRight: '20%',
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+    lineHeight: 36,
+  },
+  searchContainer: {
+    marginTop: 24,
+    alignItems: 'center',
+  },
+  newMoviesContainer: {
+    marginTop: 32,
+    paddingRight: 0,
   },
 });
