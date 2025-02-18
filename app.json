@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "Netflyx_",
     "slug": "Netflyx_",
     "version": "1.0.0",
