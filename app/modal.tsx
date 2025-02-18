@@ -1,25 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { Dimensions, Image, Platform, ScrollView, StyleSheet } from 'react-native';
+import { Dimensions, Image, ScrollView, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 
 import { Box, Text } from '~/theme';
 import { MovieService } from './_core/service/movieService';
 import { Movie } from './_core/interface/movieInterface';
 import { LinearGradient } from 'expo-linear-gradient';
-import { position } from '@shopify/restyle';
+import { getStarRating, imageUrl } from './_core/helpers/helper';
+import MovieCarousel from '~/components/MovieCarousel';
 
 const win = Dimensions.get('window');
 
 export default function Modal() {
   const [isLoading, setIsLoading] = useState(true);
   const [movieData, setMovieData] = useState<Movie>();
+  const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
   const [rating, setRating] = useState('');
   const [posterHeight, setPosterHeight] = useState(win.height * 0.6); // Default height
 
-  const imageUrl = 'https://image.tmdb.org/t/p/original/';
-
   useEffect(() => {
-    MovieService.getMovieDetails(1241983)
+    MovieService.getMovieDetails(939243)
       .then((response) => {
         setMovieData(response);
         setRating(getStarRating(response?.vote_average, 5));
@@ -34,24 +33,25 @@ export default function Modal() {
         console.error('Error:', error);
       })
       .finally(() => {
-        setIsLoading(false);
+        MovieService.getRecommendedMovies(939243)
+          .then((response) => {
+            setRecommendedMovies(response.results || []);
+
+            // let recommendedMovies: Movie[] = [];
+            // for (const [key, value] of Object.entries(response)) {
+            //   console.log(key, value);
+            //   recommendedMovies.push(value as Movie);
+            // }
+            // setRecommendedMovies(recommendedMovies || []);
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
       });
   }, []);
-
-  function getStarRating(rating: number, maxStars = 5) {
-    rating = rating / 2; // Divide by 2 to get 5 star rating
-    let fullStars = Math.floor(rating);
-    let halfStar = rating % 1 >= 0.5 ? 1 : 0;
-    let emptyStars = maxStars - fullStars - halfStar;
-
-    let stars = [];
-
-    for (let i = 0; i < fullStars; i++) stars.push('★');
-    if (halfStar) stars.push('☆');
-    for (let i = 0; i < emptyStars; i++) stars.push('☆');
-
-    return stars.join('');
-  }
 
   if (isLoading) {
     return (
@@ -63,7 +63,7 @@ export default function Modal() {
 
   return (
     <ScrollView>
-      <Box position={'absolute'} width="100%" height={posterHeight} backgroundColor="black">
+      <Box position={'absolute'} width="100%" height={posterHeight}>
         <Image
           source={{ uri: imageUrl + movieData?.poster_path }}
           style={[styles.moviePoster, { height: posterHeight }]}
@@ -72,21 +72,36 @@ export default function Modal() {
       <LinearGradient colors={['rgba(0,0,0,0)', '#171719']} style={styles.absoluteFill} />
 
       <Box flex={1} backgroundColor="primaryBg" alignItems="center" style={styles.mainContainer}>
-        <Text variant="title" color="white" textAlign="center" style={styles.title}>
+        <Text variant="title" color="white" textAlign="center" style={styles.title} fontSize={20}>
           {movieData?.original_title}
         </Text>
-        <Box marginVertical="l_32" width="90%" style={styles.subInfo} alignItems="center">
-          <Text color="white" textAlign="center" fontSize={16}>
-            {movieData?.release_date.split('-')[0]} •{' '}
-            {movieData?.genres?.map((genre) => genre.name).join(', ')} • {movieData?.runtime}min
+        <Box
+          marginTop="m_16"
+          maxWidth="90%"
+          style={styles.subInfo}
+          alignItems="center"
+          flexDirection="row"
+          justifyContent="center"
+          flexWrap="wrap">
+          <Text variant="subInfo" color="lightGray" textAlign="center">
+            {movieData?.release_date?.split('-')[0]} •
+          </Text>
+          <Text variant="subInfo" color="lightGray" textAlign="center">
+            {' '}
+            {movieData?.genres?.map((genre) => genre.name).join('-')}{' '}
+          </Text>
+          <Text variant="subInfo" color="lightGray" textAlign="center">
+            • {Math.trunc((movieData?.runtime ?? 0) / 60)}h{(movieData?.runtime ?? 0) % 60}min
           </Text>
         </Box>
-        <Text color="orange" textAlign="center" fontSize={16}>
-          {rating}
+        <Text color="orange" textAlign="center" fontSize={14} marginVertical="m_16">
+          {rating} {((movieData?.vote_average ?? 0) / 2).toFixed(2)}
         </Text>
-        <Text color="white" textAlign="center" fontSize={16}>
+        <Text color="lightGray" textAlign="center" fontSize={15} style={styles.infoFont}>
           {movieData?.overview}
         </Text>
+        <Box width={'90%'} height={2} backgroundColor="darkGray" margin="l_32" borderRadius="m_6" />
+        <MovieCarousel movies={recommendedMovies} title="Recommended Movies" />
       </Box>
     </ScrollView>
   );
@@ -99,16 +114,21 @@ export const styles = StyleSheet.create({
   },
   absoluteFill: {
     width: '100%',
-    height: 500,
+    height: 540,
   },
   mainContainer: {
     marginTop: 0,
-    height: 500,
+    minHeight: 500,
   },
   title: {
     width: '100%',
+    fontFamily: 'Open Sans',
   },
   subInfo: {
     width: '100%',
+    fontWeight: 'ultralight',
+  },
+  infoFont: {
+    maxWidth: '90%',
   },
 });
