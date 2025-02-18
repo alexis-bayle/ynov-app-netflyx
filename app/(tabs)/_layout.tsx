@@ -17,6 +17,8 @@ export default function TabLayout() {
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           height: 70,
+          bottom: 0,
+          shadowColor: 'transparent',
         },
         tabBarItemStyle: {
           flex: 1,
