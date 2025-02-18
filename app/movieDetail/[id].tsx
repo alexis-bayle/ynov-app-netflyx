@@ -2,23 +2,26 @@ import { Dimensions, Image, ScrollView, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 
 import { Box, Text } from '~/theme';
-import { MovieService } from './_core/service/movieService';
-import { Movie } from './_core/interface/movieInterface';
+import { MovieService } from '../_core/service/movieService';
+import { Movie } from '../_core/interface/movieInterface';
 import { LinearGradient } from 'expo-linear-gradient';
-import { getStarRating, imageUrl } from './_core/helpers/helper';
+import { getRandomInt, getStarRating, imageUrl } from '../_core/helpers/helper';
 import MovieCarousel from '~/components/MovieCarousel';
+import { useLocalSearchParams } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
 const win = Dimensions.get('window');
 
-export default function Modal() {
+export default function MovieDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [movieData, setMovieData] = useState<Movie>();
   const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
   const [rating, setRating] = useState('');
   const [posterHeight, setPosterHeight] = useState(win.height * 0.6); // Default height
+  const params = useLocalSearchParams();
 
   useEffect(() => {
-    MovieService.getMovieDetails(939243)
+    MovieService.getMovieDetails(Number(params.id))
       .then((response) => {
         setMovieData(response);
         setRating(getStarRating(response?.vote_average, 5));
@@ -33,16 +36,9 @@ export default function Modal() {
         console.error('Error:', error);
       })
       .finally(() => {
-        MovieService.getRecommendedMovies(939243)
+        MovieService.getRecommendedMoviesByMovieId(Number(params.id))
           .then((response) => {
             setRecommendedMovies(response.results || []);
-
-            // let recommendedMovies: Movie[] = [];
-            // for (const [key, value] of Object.entries(response)) {
-            //   console.log(key, value);
-            //   recommendedMovies.push(value as Movie);
-            // }
-            // setRecommendedMovies(recommendedMovies || []);
           })
           .catch((error) => {
             console.error('Error:', error);
@@ -55,7 +51,7 @@ export default function Modal() {
 
   if (isLoading) {
     return (
-      <Box flex={1} justifyContent="center" alignItems="center">
+      <Box flex={1} justifyContent="center" alignItems="center" backgroundColor='primaryBg'>
         <Text>Loading...</Text>
       </Box>
     );
@@ -101,7 +97,11 @@ export default function Modal() {
           {movieData?.overview}
         </Text>
         <Box width={'90%'} height={2} backgroundColor="darkGray" margin="l_32" borderRadius="m_6" />
-        <MovieCarousel movies={recommendedMovies} title="Recommended Movies" />
+        <MovieCarousel
+          movies={recommendedMovies}
+          title="Recommended Movies"
+          containerStyle={{ flex: 1, marginLeft: 24 }}
+        />
       </Box>
     </ScrollView>
   );
@@ -117,8 +117,7 @@ export const styles = StyleSheet.create({
     height: 540,
   },
   mainContainer: {
-    marginTop: 0,
-    minHeight: 500,
+    paddingBottom: 30,
   },
   title: {
     width: '100%',
