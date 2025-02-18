@@ -9,21 +9,26 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { position } from '@shopify/restyle';
 
 const win = Dimensions.get('window');
-const ratio = win.width / 541;
 
 export default function Modal() {
   const [isLoading, setIsLoading] = useState(true);
   const [movieData, setMovieData] = useState<Movie>();
   const [rating, setRating] = useState('');
+  const [posterHeight, setPosterHeight] = useState(win.height * 0.6); // Default height
 
   const imageUrl = 'https://image.tmdb.org/t/p/original/';
 
   useEffect(() => {
-    MovieService.getMovieDetails(2323)
+    MovieService.getMovieDetails(1241983)
       .then((response) => {
-        console.log(response);
         setMovieData(response);
         setRating(getStarRating(response?.vote_average, 5));
+        if (response?.poster_path) {
+          Image.getSize(imageUrl + response.poster_path, (width, height) => {
+            const aspectRatio = height / width;
+            setPosterHeight(win.width * aspectRatio);
+          });
+        }
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -41,9 +46,9 @@ export default function Modal() {
 
     let stars = [];
 
-    for (let i = 0; i < fullStars; i++) stars.push('★'); // Full stars
-    if (halfStar) stars.push('☆'); // Half star
-    for (let i = 0; i < emptyStars; i++) stars.push('☆'); // Empty stars
+    for (let i = 0; i < fullStars; i++) stars.push('★');
+    if (halfStar) stars.push('☆');
+    for (let i = 0; i < emptyStars; i++) stars.push('☆');
 
     return stars.join('');
   }
@@ -58,8 +63,11 @@ export default function Modal() {
 
   return (
     <ScrollView>
-      <Box flex={1} position={'absolute'} top={0} left={0} right={0} aspectRatio={390 / 422}>
-        <Image source={{ uri: imageUrl + movieData?.poster_path }} style={styles.moviePoster} />
+      <Box position={'absolute'} width="100%" height={posterHeight} backgroundColor="black">
+        <Image
+          source={{ uri: imageUrl + movieData?.poster_path }}
+          style={[styles.moviePoster, { height: posterHeight }]}
+        />
       </Box>
       <LinearGradient colors={['rgba(0,0,0,0)', '#171719']} style={styles.absoluteFill} />
 
@@ -67,7 +75,7 @@ export default function Modal() {
         <Text variant="title" color="white" textAlign="center" style={styles.title}>
           {movieData?.original_title}
         </Text>
-        <Box marginVertical="l_32" width="100%" style={styles.subInfo}>
+        <Box marginVertical="l_32" width="90%" style={styles.subInfo} alignItems="center">
           <Text color="white" textAlign="center" fontSize={16}>
             {movieData?.release_date.split('-')[0]} •{' '}
             {movieData?.genres?.map((genre) => genre.name).join(', ')} • {movieData?.runtime}min
@@ -87,9 +95,7 @@ export default function Modal() {
 export const styles = StyleSheet.create({
   moviePoster: {
     width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    // aspectRatio: 1,
+    resizeMode: 'cover',
   },
   absoluteFill: {
     width: '100%',
