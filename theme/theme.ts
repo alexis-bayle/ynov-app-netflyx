@@ -6,8 +6,10 @@ type NamedStyles<T> = {
 };
 
 const palette = {
+  lightGray: "rgba(255, 255, 255, 0.75)",
   gray: '#808080',
   darkGray: '#38434D',
+  
   white: '#FFFFFF',
   black: '#000000',
   primaryBg: '#171719',
@@ -38,18 +40,28 @@ const theme = createTheme({
     xl_24: 24,
   },
   textVariants: {
+    title: { fontSize: 20, fontWeight: 'bold', fontFamily: 'Open-Sans' },
+
     body: {
       fontSize: 16,
+      fontFamily: 'Open-Sans',
     },
-    title: { fontSize: 20, fontWeight: 'bold' },
+    subInfo: {
+      fontSize: 13,
+      fontWeight: 'thin',
+      fontFamily: 'Open-Sans',
+    },
     large: {
       fontSize: 36,
+      fontFamily: 'Open-Sans',
     },
     extra_large: {
       fontSize: 64,
       fontWeight: 'bold',
+      fontFamily: 'Open-Sans',
     },
     defaults: {
+      fontFamily: 'Open-Sans',
       // We can define a default text variant here.
     },
   },

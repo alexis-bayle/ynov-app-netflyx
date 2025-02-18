@@ -1,9 +1,10 @@
-import { Stack } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import * as NavigationBar from 'expo-navigation-bar';
 import { StyleSheet, View, Image } from 'react-native';
 
 import { ScreenContent } from '~/components/ScreenContent';
-import {useEffect} from "react";
+import { useEffect } from 'react';
+import { HeaderButton } from '~/components/HeaderButton';
 
 export default function Home() {
   useEffect(() => {
@@ -15,11 +16,11 @@ export default function Home() {
     <>
       <Stack.Screen options={{ title: 'Home', headerShown: false }} />
       <View style={styles.parent}>
-        <Image
-          source={require('assets/home-background.png')}
-          style={styles.backgroundImage}
-        />
+        <Image source={require('assets/home-background.png')} style={styles.backgroundImage} />
         <View style={styles.content}>
+          <Link href="/modal" asChild>
+            <HeaderButton />
+          </Link>
           <ScreenContent path="app/(tabs)/index.tsx" title="Home" />
         </View>
       </View>
