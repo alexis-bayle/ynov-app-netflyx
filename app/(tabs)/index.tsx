@@ -1,80 +1,88 @@
 import { Link, Stack } from 'expo-router';
 import * as NavigationBar from 'expo-navigation-bar';
-import { StyleSheet, View, Image, Text } from 'react-native';
-import {useEffect} from "react";
-import { SearchInput } from "~/components/home/SearchInput";
-import { NewMovies } from "~/components/home/NewMovies";
-import { ScreenContent } from '~/components/ScreenContent';
-import { HeaderButton } from '~/components/HeaderButton';
+import {
+  StyleSheet,
+  View,
+  Image,
+  Text,
+  ScrollView,
+  ImageBackground,
+  Dimensions,
+} from 'react-native';
+import { useEffect, useState } from 'react';
+import { SearchInput } from '~/components/home/SearchInput';
+import { MovieService } from '../_core/service/movieService';
+import MovieCarousel from '~/components/MovieCarousel';
 
 export default function Home() {
+  const [newMovies, setNewMovies] = useState([]);
+  const [popularMovies, setPopularMovies] = useState([]);
+
   useEffect(() => {
     NavigationBar.setVisibilityAsync('hidden');
     NavigationBar.setBehaviorAsync('overlay-swipe');
+
+    MovieService.getNewMovies().then((response) => {
+      setNewMovies(response.results || []);
+    });
+    MovieService.getPopulardMovies().then((response) => {
+      setPopularMovies(response.results || []);
+    });
   }, []);
 
   return (
     <>
       <Stack.Screen options={{ title: 'Home', headerShown: false }} />
-      <View style={styles.parent}>
-        <Image
-          source={require('assets/home-background.png')}
+      <View style={styles.container}>
+        <ImageBackground
+          source={require('assets/home-background1.png')}
           style={styles.backgroundImage}
         />
-        <View style={styles.content}>
-          <Link href="/modal" asChild>
-            <HeaderButton />
-          </Link>
-          <ScreenContent path="app/(tabs)/index.tsx" title="Home" />
-          <View style={styles.titleSection}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.parent}>
             <Text style={styles.title}>What would you like to watch?</Text>
+            <SearchInput containerStyle={{ alignSelf: 'center' }} />
+            <MovieCarousel
+              movies={newMovies}
+              title="New Movies"
+              containerStyle={{ marginTop: 32, paddingRight: 0 }}
+            />
+            <MovieCarousel
+              movies={popularMovies}
+              title="Popular Movies"
+              containerStyle={{ marginTop: 32, paddingRight: 0 }}
+            />
           </View>
-
-          <View style={styles.searchContainer}>
-            <SearchInput />
-          </View>
-        </View>
-        <View style={styles.newMoviesContainer}>
-          <NewMovies />
-        </View>
-
+        </ScrollView>
       </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  parent: {
+  container: {
     flex: 1,
-    backgroundColor: '#171719',
   },
   backgroundImage: {
-    ...StyleSheet.absoluteFillObject, // position absolute, top: 0, left: 0, bottom: 0, right: 0
-    zIndex: 1, // se place au-dessus du background
+    ...StyleSheet.absoluteFillObject,
+    zIndex: -1,
   },
-  content: {
+  scrollContent: {
+    paddingTop: 0,
+  },
+  parent: {
+    flex: 1,
     padding: 24,
-    zIndex: 2, // le contenu se superpose à l'image
-  },
-  titleSection: {
-    alignItems: 'center',
-    marginTop: '20%',
-    marginLeft: '20%',
-    marginRight: '20%',
+    paddingBottom: 100,
   },
   title: {
     fontSize: 26,
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
+    alignSelf: 'center',
+    margin: '10%',
+    marginBottom: 32,
     lineHeight: 36,
-  },
-  searchContainer: {
-    marginTop: 24,
-    alignItems: 'center',
-  },
-  newMoviesContainer: {
-    marginTop: 32,
-    paddingRight: 0,
   },
 });

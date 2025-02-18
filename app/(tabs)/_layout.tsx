@@ -2,11 +2,7 @@ import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, Tabs } from 'expo-router';
 import { View, StyleSheet, Image } from 'react-native';
-
-import { HeaderButton } from '~/components/HeaderButton';
-import { TabBarIcon } from '~/components/TabBarIcon';
-import { TabBarIconSvg } from "~/components/TabBarIconSvg";
-
+import { TabBarIconSvg } from '~/components/TabBarIconSvg';
 
 export default function TabLayout() {
   return (
@@ -29,7 +25,6 @@ export default function TabLayout() {
         // On applique notre dégradé de fond
         tabBarBackground: () => (
           <View style={StyleSheet.absoluteFillObject}>
-            {/* Ligne de bordure blanche en haut */}
             <View
               style={{
                 position: 'absolute',
@@ -41,8 +36,11 @@ export default function TabLayout() {
                 zIndex: 2,
               }}
             />
-            {/* Blur par-dessus */}
-            <BlurView tint="light" intensity={10} style={StyleSheet.absoluteFillObject} />
+            <BlurView
+              intensity={30}
+              experimentalBlurMethod={'dimezisBlurView'}
+              style={StyleSheet.absoluteFillObject}
+            />
           </View>
         ),
         tabBarActiveTintColor: '#fff',
@@ -53,11 +51,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <TabBarIconSvg name="home" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <HeaderButton />
-            </Link>
-          ),
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -85,7 +79,8 @@ export default function TabLayout() {
                   width: SIZE,
                   marginBottom: 28,
                   height: SIZE,
-                  borderRadius: SIZE / 2}}>
+                  borderRadius: SIZE / 2,
+                }}>
                 <View
                   style={{
                     width: SIZE,

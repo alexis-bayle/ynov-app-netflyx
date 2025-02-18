@@ -34,11 +34,8 @@ export default function RootLayout() {
       <ThemeProvider theme={theme}>
         <StatusBar translucent backgroundColor="transparent" style="light" />
         <Stack>
+          <Stack.Screen name="movieDetail/[id]" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="modal"
-            options={{ headerShown: false, presentation: 'fullScreenModal' }}
-          />
         </Stack>
       </ThemeProvider>
     </QueryClientProvider>

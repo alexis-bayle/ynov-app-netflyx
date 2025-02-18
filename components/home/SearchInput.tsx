@@ -1,12 +1,14 @@
 import { makeStyles } from '~/theme';
-import { Image, View, TextInput } from 'react-native';
+import { Image, View, TextInput, ViewStyle, StyleProp } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-export const SearchInput = () => {
+export const SearchInput = ({
+  containerStyle,
+}: Readonly<{ containerStyle?: StyleProp<ViewStyle> }>) => {
   const styles = useStyles();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <Image source={require('assets/loop.png')} style={styles.searchIcon} />
       <TextInput placeholder="Search" placeholderTextColor="white" style={styles.input} />
       <View style={styles.microphoneIcon}>
