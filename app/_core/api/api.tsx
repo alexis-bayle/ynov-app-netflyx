@@ -1,6 +1,5 @@
 export const apiUrl = 'https://api.themoviedb.org/3';
-const Authorization =
-  'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MzdmN2E5MTc5NTY5YTNmZTBiODE4YmRiNDU5OWZmYiIsIm5iZiI6MTczOTc5MTQ4Ni4xMzc5OTk4LCJzdWIiOiI2N2IzMWM3ZTE2OWUzNjVhZjY5ZmNjNzQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.xSU1iTGzsfrK9vFa_Z_jXOy759txxJuF3MTqFaicbQE';
+const Authorization = `Bearer ${process.env.EXPO_PUBLIC_API_KEY}`;
 
 export default class ApiService {
   get(url: string) {

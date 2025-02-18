@@ -1,9 +1,11 @@
-import { Stack } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import * as NavigationBar from 'expo-navigation-bar';
 import { StyleSheet, View, Image, Text } from 'react-native';
 import {useEffect} from "react";
 import { SearchInput } from "~/components/home/SearchInput";
 import { NewMovies } from "~/components/home/NewMovies";
+import { ScreenContent } from '~/components/ScreenContent';
+import { HeaderButton } from '~/components/HeaderButton';
 
 export default function Home() {
   useEffect(() => {
@@ -20,6 +22,10 @@ export default function Home() {
           style={styles.backgroundImage}
         />
         <View style={styles.content}>
+          <Link href="/modal" asChild>
+            <HeaderButton />
+          </Link>
+          <ScreenContent path="app/(tabs)/index.tsx" title="Home" />
           <View style={styles.titleSection}>
             <Text style={styles.title}>What would you like to watch?</Text>
           </View>
