@@ -12,10 +12,6 @@ export default function MovieCard({ movie }: Readonly<{ movie: Movie }>) {
       pathname: '/movieDetail/[id]',
       params: { id: movie.id },
     });
-    router.replace({
-      pathname: '/movieDetail/[id]',
-      params: { id: movie.id },
-    });
   }
 
   return (

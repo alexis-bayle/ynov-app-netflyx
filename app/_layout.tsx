@@ -34,7 +34,11 @@ export default function RootLayout() {
       <ThemeProvider theme={theme}>
         <StatusBar translucent backgroundColor="transparent" style="light" />
         <Stack>
-          <Stack.Screen name="movieDetail/[id]" options={{ headerShown: false }} />
+          <Stack.Screen
+            getId={({ params }) => params?.id}
+            name="movieDetail/[id]"
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
       </ThemeProvider>

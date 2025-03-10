@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import React from "react";
-import OnboardingScreen from "~/screens/OnBoardingScreen";
+import OnboardingScreen from "~/app/OnBoardingScreen";
 
 export default function Onboarding() {
     return (
