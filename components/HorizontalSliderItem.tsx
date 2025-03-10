@@ -8,8 +8,13 @@ export default function HorizontalSliderItem({ id, image, title, body, signUp, l
     const router = useRouter();
     
     const completeOnboarding = async () => {
-        await AsyncStorage.setItem('isOnboarded', 'true');
-        router.replace('/');
+        try {
+            await AsyncStorage.setItem("isOnboarded", "true");
+            router.replace("/");
+            console.log("Onboarding terminé, redirection vers /...");
+          } catch (error) {
+            console.error("Erreur lors de la completion de l'onboarding:", error);
+          }
     };
 
         return(

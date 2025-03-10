@@ -1,49 +1,71 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Link, Redirect, Stack, useRouter } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import * as NavigationBar from 'expo-navigation-bar';
 import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
-  Image,
   Text,
   ScrollView,
   ImageBackground,
-  Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { SearchInput } from '~/components/home/SearchInput';
 import { MovieService } from '../_core/service/movieService';
 import MovieCarousel from '~/components/MovieCarousel';
 
 export default function Home() {
-  const [isOnboarded, setIsOnboarded] = useState<boolean>(false);
+  const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
+  const [newMovies, setNewMovies] = useState([]);
+  const [popularMovies, setPopularMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [redirectToOnboarding, setRedirectToOnboarding] = useState(false);
 
   useEffect(() => {
     const checkOnboarding = async () => {
-      const onboarded = await AsyncStorage.getItem('isOnboarded');
-      setIsOnboarded(onboarded === 'true');
+      try {
+        const onboarded = await AsyncStorage.getItem('isOnboarded');
+        setIsOnboarded(onboarded === 'true');
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'onboarding :", error);
+      } finally {
+        setLoading(false);
+      }
     };
     checkOnboarding();
   }, []);
 
-  if (!isOnboarded) {
-    return <Redirect href="/onboarding" />;
+  useEffect(() => {
+    if (isOnboarded === null) return;
+
+    if (isOnboarded === false) {
+      setRedirectToOnboarding(true);
+    } else {
+      NavigationBar.setVisibilityAsync('hidden');
+      NavigationBar.setBehaviorAsync('overlay-swipe');
+  
+      MovieService.getNewMovies().then((response)=>{
+        setNewMovies(response.results || []);
+      });
+      console.log(newMovies);
+
+      MovieService.getPopulardMovies().then((response)=>{
+        setPopularMovies(response.results || [])
+      });
+    }
+  }, [isOnboarded]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="white" />
+      </View>
+    );
   }
 
-  const [newMovies, setNewMovies] = useState([]);
-  const [popularMovies, setPopularMovies] = useState([]);
-
-  useEffect(() => {
-    NavigationBar.setVisibilityAsync('hidden');
-    NavigationBar.setBehaviorAsync('overlay-swipe');
-
-    MovieService.getNewMovies().then((response) => {
-      setNewMovies(response.results || []);
-    });
-    MovieService.getPopulardMovies().then((response) => {
-      setPopularMovies(response.results || []);
-    });
-  }, []);
+  if (redirectToOnboarding) {
+    return <Redirect href="/onboarding" />; // Affiche la redirection si nécessaire
+  }
 
   return (
     <>
@@ -99,5 +121,11 @@ const styles = StyleSheet.create({
     margin: '10%',
     marginBottom: 32,
     lineHeight: 36,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
   },
 });
