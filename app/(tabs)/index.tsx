@@ -47,7 +47,6 @@ export default function Home() {
       MovieService.getNewMovies().then((response)=>{
         setNewMovies(response.results || []);
       });
-      console.log(newMovies);
 
       MovieService.getPopulardMovies().then((response)=>{
         setPopularMovies(response.results || [])
