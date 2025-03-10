@@ -7,6 +7,7 @@ export default function MovieCard({ movie }: Readonly<{ movie: Movie }>) {
   const router = useRouter();
 
   function onPress() {
+    console.log('MovieCard onPress', movie.id);
     router.push({
       pathname: '/movieDetail/[id]',
       params: { id: movie.id },
