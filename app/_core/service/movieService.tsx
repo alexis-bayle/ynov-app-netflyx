@@ -22,7 +22,17 @@ export class MovieService {
       });
   }
 
-  static async getPopulardMovies(): Promise<any> { //TODO: Implement interface
+  static async getMovieCreditsByMovieId(movieId: number): Promise<any> {
+    return this.api
+      .get(`${apiUrl}/movie/${movieId}/credits?language=en-US`)
+      .then((res: any) => res.json())
+      .then((data: any) => {
+        return data;
+      });
+  }
+
+  static async getPopulardMovies(): Promise<any> {
+    //TODO: Implement interface
     return this.api
       .get(`${apiUrl}/movie/popular?language=en-US`)
       .then((res: any) => res.json())
@@ -31,7 +41,8 @@ export class MovieService {
       });
   }
 
-  static async getNewMovies(): Promise<any> { //TODO: Implement interface
+  static async getNewMovies(): Promise<any> {
+    //TODO: Implement interface
     return this.api
       .get(`${apiUrl}/movie/now_playing?language=en-US`)
       .then((res: any) => res.json())
@@ -40,4 +51,3 @@ export class MovieService {
       });
   }
 }
-

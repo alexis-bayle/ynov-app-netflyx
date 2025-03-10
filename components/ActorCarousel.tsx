@@ -1,32 +1,32 @@
-import { Movie } from '~/app/_core/interface/movieInterface';
-import MovieCard from './MovieCard';
 import { Box, Text } from '~/theme';
 import { FlatList, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import ActorCard from './ActorCard';
+import { Cast } from '~/app/_core/interface/movieInterface';
 
-export default function MovieCarousel({
-  movies = [],
+export default function ActorCarousel({
+  actors = [],
   title,
   containerStyle = {},
-}: Readonly<{ movies: Movie[]; title: string; containerStyle?: StyleProp<ViewStyle> }>) {
+}: Readonly<{ actors: Cast[]; title: string; containerStyle?: StyleProp<ViewStyle> }>) {
   return (
-    <Box style={[containerStyle, movies.length === 0 ? styles.container : {}]}>
+    <Box style={[containerStyle, actors.length === 0 ? styles.container : {}]}>
       <Text variant="title" color="white">
         {title}
       </Text>
       <View id="carousel-component" style={styles.carouselContainer}>
-        {movies.length > 0 && (
+        {actors.length > 0 && (
           <FlatList
-            data={movies}
-            renderItem={({ item, index }) => <MovieCard key={index} movie={item} />}
+            data={actors}
+            renderItem={({ item, index }) => <ActorCard key={index} actor={item} />}
             horizontal
             contentContainerStyle={{
               gap: 16,
             }}
           />
         )}
-        {movies.length === 0 && (
-          <Text variant="body" color="white" style={styles.noMovies}>
-            No movies found
+        {actors.length === 0 && (
+          <Text variant="body" color="white" style={styles.noActors}>
+            No actors found
           </Text>
         )}
       </View>
@@ -43,8 +43,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
+    marginBottom: 0,
+    width: '100%',
   },
-  noMovies: {
+  noActors: {
     width: '100%',
     marginLeft: 16,
   },

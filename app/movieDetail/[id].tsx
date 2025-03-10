@@ -3,18 +3,22 @@ import { useState, useEffect } from 'react';
 
 import { Box, Text } from '~/theme';
 import { MovieService } from '../_core/service/movieService';
-import { Movie } from '../_core/interface/movieInterface';
+import { Cast, Movie } from '../_core/interface/movieInterface';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getRandomInt, getStarRating, imageUrl } from '../_core/helpers/helper';
 import MovieCarousel from '~/components/MovieCarousel';
 import { useLocalSearchParams } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import BackButton from '~/components/BackButton';
+import MenuButton from '~/components/MenuButton';
+import PlayButton from '~/components/PlayButton';
+import ActorCarousel from '~/components/ActorCarousel';
 
 const win = Dimensions.get('window');
 
 export default function MovieDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [movieData, setMovieData] = useState<Movie>();
+  const [cast, setCast] = useState<Cast[]>([]);
   const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
   const [rating, setRating] = useState('');
   const [posterHeight, setPosterHeight] = useState(win.height * 0.6); // Default height
@@ -42,6 +46,14 @@ export default function MovieDetail() {
           })
           .catch((error) => {
             console.error('Error:', error);
+          });
+
+        MovieService.getMovieCreditsByMovieId(Number(params.id))
+          .then((response) => {
+            setCast(response.cast || []);
+          })
+          .catch((error) => {
+            console.error('Error:', error);
           })
           .finally(() => {
             setIsLoading(false);
@@ -64,6 +76,12 @@ export default function MovieDetail() {
   return (
     <ScrollView>
       <Box position={'absolute'} width="100%" height={posterHeight}>
+        <BackButton />
+        <MenuButton
+          onPress={() => {
+            console.log('menu');
+          }}
+        />
         <Image
           source={{ uri: imageUrl + movieData?.poster_path }}
           style={[styles.moviePoster, { height: posterHeight }]}
@@ -72,6 +90,11 @@ export default function MovieDetail() {
       <LinearGradient colors={['rgba(0,0,0,0)', '#171719']} style={styles.absoluteFill} />
 
       <Box flex={1} backgroundColor="primaryBg" alignItems="center" style={styles.mainContainer}>
+        <PlayButton
+          onPress={() => {
+            console.log('play');
+          }}
+        />
         <Text variant="title" color="white" textAlign="center" style={styles.title} fontSize={20}>
           {movieData?.title}
         </Text>
@@ -100,6 +123,12 @@ export default function MovieDetail() {
         <Text color="lightGray" textAlign="center" fontSize={15} style={styles.infoFont}>
           {movieData?.overview}
         </Text>
+        <Box width={'90%'} height={2} backgroundColor="darkGray" margin="l_32" borderRadius="m_6" />
+        <ActorCarousel
+          actors={cast.filter((cast) => cast.known_for_department === 'Acting')}
+          title="Cast"
+          containerStyle={{ flex: 1, marginLeft: 24 }}
+        />
         <Box width={'90%'} height={2} backgroundColor="darkGray" margin="l_32" borderRadius="m_6" />
         <MovieCarousel
           movies={recommendedMovies}

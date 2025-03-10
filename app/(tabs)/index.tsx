@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { SearchInput } from '~/components/home/SearchInput';
 import { MovieService } from '../_core/service/movieService';
 import MovieCarousel from '~/components/MovieCarousel';
+import React from 'react';
 
 export default function Home() {
   const [newMovies, setNewMovies] = useState([]);
