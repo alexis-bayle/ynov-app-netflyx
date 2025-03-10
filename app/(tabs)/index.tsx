@@ -1,9 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Redirect, Stack, useRouter } from 'expo-router';
+import { Link, Redirect, Stack, useRouter } from 'expo-router';
+import * as NavigationBar from 'expo-navigation-bar';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-
-import { ScreenContent } from '~/components/ScreenContent';
+import {
+  StyleSheet,
+  View,
+  Image,
+  Text,
+  ScrollView,
+  ImageBackground,
+  Dimensions,
+} from 'react-native';
+import { SearchInput } from '~/components/home/SearchInput';
+import { MovieService } from '../_core/service/movieService';
+import MovieCarousel from '~/components/MovieCarousel';
 
 export default function Home() {
   const [isOnboarded, setIsOnboarded] = useState<boolean>(false);
@@ -20,11 +30,45 @@ export default function Home() {
     return <Redirect href="/onboarding" />;
   }
 
+  const [newMovies, setNewMovies] = useState([]);
+  const [popularMovies, setPopularMovies] = useState([]);
+
+  useEffect(() => {
+    NavigationBar.setVisibilityAsync('hidden');
+    NavigationBar.setBehaviorAsync('overlay-swipe');
+
+    MovieService.getNewMovies().then((response) => {
+      setNewMovies(response.results || []);
+    });
+    MovieService.getPopulardMovies().then((response) => {
+      setPopularMovies(response.results || []);
+    });
+  }, []);
+
   return (
     <>
-      <Stack.Screen options={{ title: 'Tab One' }} />
+      <Stack.Screen options={{ title: 'Home', headerShown: false }} />
       <View style={styles.container}>
-        <ScreenContent path="app/(tabs)/index.tsx" title="Tab One" />
+        <ImageBackground
+          source={require('assets/home-background1.png')}
+          style={styles.backgroundImage}
+        />
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.parent}>
+            <Text style={styles.title}>What would you like to watch?</Text>
+            <SearchInput containerStyle={{ alignSelf: 'center' }} />
+            <MovieCarousel
+              movies={newMovies}
+              title="New Movies"
+              containerStyle={{ marginTop: 32, paddingRight: 0 }}
+            />
+            <MovieCarousel
+              movies={popularMovies}
+              title="Popular Movies"
+              containerStyle={{ marginTop: 32, paddingRight: 0 }}
+            />
+          </View>
+        </ScrollView>
       </View>
     </>
   );
@@ -33,6 +77,27 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: -1,
+  },
+  scrollContent: {
+    paddingTop: 0,
+  },
+  parent: {
+    flex: 1,
     padding: 24,
+    paddingBottom: 100,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+    alignSelf: 'center',
+    margin: '10%',
+    marginBottom: 32,
+    lineHeight: 36,
   },
 });
