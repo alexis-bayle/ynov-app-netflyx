@@ -1,10 +1,15 @@
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 
 export default function MenuButton({ onPress }: { onPress: () => void }) {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <TouchableOpacity
+      onPress={() => {
+        Vibration.vibrate(100);
+        onPress();
+      }}
+      style={styles.container}>
       <MaterialIcons name="menu" size={24} color="white" />
     </TouchableOpacity>
   );

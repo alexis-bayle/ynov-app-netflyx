@@ -46,12 +46,12 @@ export default function Home() {
             <MovieCarousel
               movies={newMovies}
               title="New Movies"
-              containerStyle={{ marginTop: 32, paddingRight: 0 }}
+              containerStyle={{ marginTop: 32 }}
             />
             <MovieCarousel
               movies={popularMovies}
               title="Popular Movies"
-              containerStyle={{ marginTop: 32, paddingRight: 0 }}
+              containerStyle={{ marginTop: 32 }}
             />
           </View>
         </ScrollView>
@@ -73,7 +73,6 @@ const styles = StyleSheet.create({
   },
   parent: {
     flex: 1,
-    padding: 24,
     paddingBottom: 100,
   },
   title: {
@@ -85,5 +84,7 @@ const styles = StyleSheet.create({
     margin: '10%',
     marginBottom: 32,
     lineHeight: 36,
+    paddingHorizontal: 24,
+    paddingTop: 24,
   },
 });

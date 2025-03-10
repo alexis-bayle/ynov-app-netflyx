@@ -9,8 +9,8 @@ export default function ActorCarousel({
   containerStyle = {},
 }: Readonly<{ actors: Cast[]; title: string; containerStyle?: StyleProp<ViewStyle> }>) {
   return (
-    <Box style={[containerStyle, actors.length === 0 ? styles.container : {}]}>
-      <Text variant="title" color="white">
+    <Box style={[containerStyle, styles.container]}>
+      <Text variant="title" color="white" style={styles.title}>
         {title}
       </Text>
       <View id="carousel-component" style={styles.carouselContainer}>
@@ -20,6 +20,7 @@ export default function ActorCarousel({
             renderItem={({ item, index }) => <ActorCard key={index} actor={item} />}
             horizontal
             contentContainerStyle={{
+              paddingHorizontal: 16,
               gap: 16,
             }}
           />
@@ -37,7 +38,9 @@ export default function ActorCarousel({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginLeft: 50,
+  },
+  title: {
+    marginLeft: 16,
   },
   carouselContainer: {
     justifyContent: 'center',
