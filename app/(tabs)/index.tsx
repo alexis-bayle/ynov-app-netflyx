@@ -1,35 +1,72 @@
-import { Link, Stack } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Redirect, Stack } from 'expo-router';
 import * as NavigationBar from 'expo-navigation-bar';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
-  Image,
   Text,
   ScrollView,
   ImageBackground,
-  Dimensions,
+  ActivityIndicator,
 } from 'react-native';
-import { useEffect, useState } from 'react';
 import { SearchInput } from '~/components/home/SearchInput';
 import { MovieService } from '../_core/service/movieService';
 import MovieCarousel from '~/components/MovieCarousel';
 import React from 'react';
 
 export default function Home() {
+  const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
   const [newMovies, setNewMovies] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [redirectToOnboarding, setRedirectToOnboarding] = useState(false);
 
   useEffect(() => {
-    NavigationBar.setVisibilityAsync('hidden');
-    NavigationBar.setBehaviorAsync('overlay-swipe');
-
-    MovieService.getNewMovies().then((response) => {
-      setNewMovies(response.results || []);
-    });
-    MovieService.getPopulardMovies().then((response) => {
-      setPopularMovies(response.results || []);
-    });
+    const checkOnboarding = async () => {
+      try {
+        const onboarded = await AsyncStorage.getItem('isOnboarded');
+        setIsOnboarded(onboarded === 'true');
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'onboarding :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkOnboarding();
   }, []);
+
+  useEffect(() => {
+    if (isOnboarded === null) return;
+
+    if (isOnboarded === false) {
+      setRedirectToOnboarding(true);
+    } else {
+      NavigationBar.setVisibilityAsync('hidden');
+      NavigationBar.setBehaviorAsync('overlay-swipe');
+  
+      MovieService.getNewMovies().then((response)=>{
+        setNewMovies(response.results || []);
+      });
+      console.log(newMovies);
+
+      MovieService.getPopulardMovies().then((response)=>{
+        setPopularMovies(response.results || [])
+      });
+    }
+  }, [isOnboarded]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="white" />
+      </View>
+    );
+  }
+
+  if (redirectToOnboarding) {
+    return <Redirect href="/onboarding" />; // Affiche la redirection si nécessaire
+  }
 
   return (
     <>
@@ -86,5 +123,11 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     paddingHorizontal: 24,
     paddingTop: 24,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
   },
 });
