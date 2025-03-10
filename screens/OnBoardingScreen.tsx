@@ -21,7 +21,7 @@ const slides: HorizontalSliderItemProps[] = [
     },
     {
         id: 2,
-        image: undefined,
+        image: require('assets/onboarding/film-3d-icon.png'),
         title: 'Make yourself comfortable',
         body: 'Watching movies has never been easier',
         signUp: false,

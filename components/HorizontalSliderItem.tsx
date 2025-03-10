@@ -1,8 +1,17 @@
 import { Text } from "~/theme";
 import { StyleSheet, TouchableOpacity, View, Image, ImageBackground, Dimensions } from 'react-native';
 import { HorizontalSliderItemProps } from "~/interfaces/horizontal-slider-item-props";
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HorizontalSliderItem({ id, image, title, body, signUp, letsGo }: HorizontalSliderItemProps) {
+    const router = useRouter();
+    
+    const completeOnboarding = async () => {
+        await AsyncStorage.setItem('isOnboarded', 'true');
+        router.replace('/');
+    };
+
         return(
             <View style={styles.container}>
                 <Image style={getImageStyleById(id)} source={image}/>
@@ -14,7 +23,7 @@ export default function HorizontalSliderItem({ id, image, title, body, signUp, l
                     </TouchableOpacity>
                 )}
                 {letsGo && (
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={completeOnboarding}>
                         <Image style={styles.button} source={require('assets/onboarding/lets_go.png')} />
                     </TouchableOpacity>
                 )}
@@ -34,10 +43,11 @@ function getImageStyleById(id: number) {
             };
         case 1:
             return {
-                marginLeft: -20,
                 marginTop: 30,
-                width: 388,
-                height: 390, 
+                width: 350,
+                height: 350,
+                borderRadius: 100,
+                overflow: 'hidden', 
                 marginBottom: 25,
             };
         default:
