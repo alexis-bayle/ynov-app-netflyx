@@ -127,13 +127,13 @@ export default function MovieDetail() {
         <ActorCarousel
           actors={cast.filter((cast) => cast.known_for_department === 'Acting')}
           title="Cast"
-          containerStyle={{ flex: 1, marginLeft: 24 }}
+          containerStyle={{ flex: 1}}
         />
         <Box width={'90%'} height={2} backgroundColor="darkGray" margin="l_32" borderRadius="m_6" />
         <MovieCarousel
           movies={recommendedMovies}
           title="Recommended Movies"
-          containerStyle={{ flex: 1, marginLeft: 24 }}
+          containerStyle={{ flex: 1}}
         />
       </Box>
     </ScrollView>

@@ -1,8 +1,13 @@
-import { Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 
 export default function PlayButton({ onPress }: { onPress: () => void }) {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <TouchableOpacity
+      onPress={() => {
+        Vibration.vibrate(100);
+        onPress();
+      }}
+      style={styles.container}>
       <Image source={require('assets/play-button.png')} width={1} height={1} />
     </TouchableOpacity>
   );

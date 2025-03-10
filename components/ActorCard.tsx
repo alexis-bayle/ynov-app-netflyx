@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, Vibration } from 'react-native';
 import { imageUrl } from '~/app/_core/helpers/helper';
 import { Cast } from '~/app/_core/interface/movieInterface';
 export default function ActorCard({ actor }: Readonly<{ actor: Cast }>) {
@@ -16,7 +16,11 @@ export default function ActorCard({ actor }: Readonly<{ actor: Cast }>) {
   }, []);
 
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => {
+        Vibration.vibrate(100);
+      }}>
       <Image
         source={
           image !== true

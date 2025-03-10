@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { imageUrl } from '~/app/_core/helpers/helper';
 import { Movie } from '~/app/_core/interface/movieInterface';
 
@@ -7,7 +7,7 @@ export default function MovieCard({ movie }: Readonly<{ movie: Movie }>) {
   const router = useRouter();
 
   function onPress() {
-    console.log('MovieCard onPress', movie.id);
+    Vibration.vibrate(100);
     router.push({
       pathname: '/movieDetail/[id]',
       params: { id: movie.id },
@@ -19,7 +19,11 @@ export default function MovieCard({ movie }: Readonly<{ movie: Movie }>) {
   }
 
   return (
-    <TouchableOpacity style={styles.container} onPress={() => onPress()}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => {
+        onPress();
+      }}>
       <Image source={{ uri: imageUrl + movie?.poster_path }} style={styles.moviePoster} />
     </TouchableOpacity>
   );

@@ -1,11 +1,12 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 
 export default function BackButton() {
   const router = useRouter();
 
   const onPress = () => {
+    Vibration.vibrate(100);
     router.back();
   };
 
