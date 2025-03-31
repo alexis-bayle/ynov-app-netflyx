@@ -8,7 +8,6 @@ import {
   Text,
   ScrollView,
   ImageBackground,
-  ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
@@ -25,10 +24,8 @@ export default function Home() {
   const [redirectToOnboarding, setRedirectToOnboarding] = useState(false);
   const [searchInput, setSearchInput] = useState('');
 
-  const [refreshing, setRefreshing] = useState(false);
-
   const onRefresh = useCallback(() => {
-    setRefreshing(true);
+    setLoading(true);
     if (searchInput === '') {
       MovieService.getNewMovies().then((response) => {
         setNewMovies(response.results || []);
@@ -43,7 +40,7 @@ export default function Home() {
       });
     }
     setTimeout(() => {
-      setRefreshing(false);
+      setLoading(false);
     }, 2000);
   }, []);
 
@@ -57,7 +54,9 @@ export default function Home() {
       } catch (error) {
         console.error("Erreur lors de la récupération de l'onboarding :", error);
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       }
     };
     checkOnboarding();
@@ -90,14 +89,6 @@ export default function Home() {
     });
   }, [searchInput]);
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="white" />
-      </View>
-    );
-  }
-
   if (redirectToOnboarding) {
     return <Redirect href="/onboarding" />; // Affiche la redirection si nécessaire
   }
@@ -112,7 +103,7 @@ export default function Home() {
         />
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}>
           <View style={styles.parent}>
             <Text style={styles.title}>What would you like to watch?</Text>
             <SearchInput setInput={setSearchInput} containerStyle={{ alignSelf: 'center' }} />
@@ -121,11 +112,13 @@ export default function Home() {
                 <MovieCarousel
                   movies={newMovies}
                   title="New Movies"
+                  loading={loading}
                   containerStyle={{ marginTop: 32 }}
                 />
                 <MovieCarousel
                   movies={popularMovies}
                   title="Popular Movies"
+                  loading={loading}
                   containerStyle={{ marginTop: 32 }}
                 />
               </>
