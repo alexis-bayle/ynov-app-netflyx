@@ -1,3 +1,4 @@
+import { position } from '@shopify/restyle';
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
@@ -6,6 +7,7 @@ import Animated, {
   withTiming,
   withRepeat,
   Easing,
+  ReduceMotion,
 } from 'react-native-reanimated';
 
 export default function SkeletonMovieCard() {
@@ -15,11 +17,12 @@ export default function SkeletonMovieCard() {
   useEffect(() => {
     shimmerTranslateX.value = withRepeat(
       withTiming(width, {
-        duration: 1000,
+        duration: 1200,
         easing: Easing.linear,
+        reduceMotion: ReduceMotion.System,
       }),
-      -1,
-      false
+      2,
+      true
     );
   }, [shimmerTranslateX, width]);
 

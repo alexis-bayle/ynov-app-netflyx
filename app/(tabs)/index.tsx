@@ -26,10 +26,8 @@ export default function Home() {
   const [redirectToOnboarding, setRedirectToOnboarding] = useState(false);
   const [searchInput, setSearchInput] = useState('');
 
-  const [refreshing, setRefreshing] = useState(false);
-
   const onRefresh = useCallback(() => {
-    setRefreshing(true);
+    setLoading(true);
     if (searchInput === '') {
       MovieService.getNewMovies().then((response) => {
         setNewMovies(response.results || []);
@@ -44,7 +42,7 @@ export default function Home() {
       });
     }
     setTimeout(() => {
-      setRefreshing(false);
+      setLoading(false);
     }, 2000);
   }, []);
 
@@ -107,7 +105,7 @@ export default function Home() {
         />
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}>
           <View style={styles.parent}>
             <Text style={styles.title}>What would you like to watch?</Text>
             <SearchInput setInput={setSearchInput} containerStyle={{ alignSelf: 'center' }} />
@@ -115,10 +113,7 @@ export default function Home() {
               <>
                 {loading ? (
                   <>
-                    <MovieCarouselSkeleton
-                      title="New Movies"
-                      containerStyle={{ marginTop: 32 }}
-                    />
+                    <MovieCarouselSkeleton title="New Movies" containerStyle={{ marginTop: 32 }} />
                     <MovieCarouselSkeleton
                       title="Popular Movies"
                       containerStyle={{ marginTop: 32 }}
