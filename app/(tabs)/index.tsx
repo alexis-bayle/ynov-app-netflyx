@@ -15,6 +15,7 @@ import {
 import { SearchInput } from '~/components/home/SearchInput';
 import { MovieService } from '../_core/service/movieService';
 import MovieCarousel from '~/components/MovieCarousel';
+import MovieCarouselSkeleton from '~/components/MovieCarouselSkeleton';
 
 export default function Home() {
   const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
@@ -57,7 +58,9 @@ export default function Home() {
       } catch (error) {
         console.error("Erreur lors de la récupération de l'onboarding :", error);
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       }
     };
     checkOnboarding();
@@ -90,14 +93,6 @@ export default function Home() {
     });
   }, [searchInput]);
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="white" />
-      </View>
-    );
-  }
-
   if (redirectToOnboarding) {
     return <Redirect href="/onboarding" />; // Affiche la redirection si nécessaire
   }
@@ -118,16 +113,31 @@ export default function Home() {
             <SearchInput setInput={setSearchInput} containerStyle={{ alignSelf: 'center' }} />
             {searchInput === '' ? (
               <>
-                <MovieCarousel
-                  movies={newMovies}
-                  title="New Movies"
-                  containerStyle={{ marginTop: 32 }}
-                />
-                <MovieCarousel
-                  movies={popularMovies}
-                  title="Popular Movies"
-                  containerStyle={{ marginTop: 32 }}
-                />
+                {loading ? (
+                  <>
+                    <MovieCarouselSkeleton
+                      title="New Movies"
+                      containerStyle={{ marginTop: 32 }}
+                    />
+                    <MovieCarouselSkeleton
+                      title="Popular Movies"
+                      containerStyle={{ marginTop: 32 }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <MovieCarousel
+                      movies={newMovies}
+                      title="New Movies"
+                      containerStyle={{ marginTop: 32 }}
+                    />
+                    <MovieCarousel
+                      movies={popularMovies}
+                      title="Popular Movies"
+                      containerStyle={{ marginTop: 32 }}
+                    />
+                  </>
+                )}
               </>
             ) : (
               <>

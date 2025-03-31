@@ -7,12 +7,10 @@ export default function MovieCarousel({
   movies = [],
   title,
   containerStyle = {},
-  error,
 }: Readonly<{
   movies: Movie[];
   title: string;
   containerStyle?: StyleProp<ViewStyle>;
-  error: string | null;
 }>) {
   return (
     <Box style={[containerStyle, styles.container]}>
@@ -32,12 +30,7 @@ export default function MovieCarousel({
             }}
           />
         )}
-        {error && (
-          <Text variant="body" color="white" style={styles.noMovies}>
-            {error}
-          </Text>
-        )}
-        {movies.length === 0 && error == null && (
+        {movies.length === 0 && (
           <Text variant="body" color="white" style={styles.noMovies}>
             No movies found
           </Text>
