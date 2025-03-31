@@ -7,7 +7,13 @@ export default function MovieCarousel({
   movies = [],
   title,
   containerStyle = {},
-}: Readonly<{ movies: Movie[]; title: string; containerStyle?: StyleProp<ViewStyle> }>) {
+  error,
+}: Readonly<{
+  movies: Movie[];
+  title: string;
+  containerStyle?: StyleProp<ViewStyle>;
+  error: string | null;
+}>) {
   return (
     <Box style={[containerStyle, styles.container]}>
       <Text variant="title" color="white" style={styles.title}>
@@ -19,13 +25,19 @@ export default function MovieCarousel({
             data={movies}
             renderItem={({ item, index }) => <MovieCard key={index} movie={item} />}
             horizontal
+            maxToRenderPerBatch={2}
             contentContainerStyle={{
               paddingHorizontal: 16,
               gap: 16,
             }}
           />
         )}
-        {movies.length === 0 && (
+        {error && (
+          <Text variant="body" color="white" style={styles.noMovies}>
+            {error}
+          </Text>
+        )}
+        {movies.length === 0 && error == null && (
           <Text variant="body" color="white" style={styles.noMovies}>
             No movies found
           </Text>

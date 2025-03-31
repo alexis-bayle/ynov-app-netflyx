@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Redirect, Stack, useRouter } from 'expo-router';
 import * as NavigationBar from 'expo-navigation-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,6 +10,7 @@ import {
   ImageBackground,
   ActivityIndicator,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import { SearchInput } from '~/components/home/SearchInput';
 import { MovieService } from '../_core/service/movieService';
@@ -23,6 +24,28 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [redirectToOnboarding, setRedirectToOnboarding] = useState(false);
   const [searchInput, setSearchInput] = useState('');
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    if (searchInput === '') {
+      MovieService.getNewMovies().then((response) => {
+        setNewMovies(response.results || []);
+      });
+
+      MovieService.getPopulardMovies().then((response) => {
+        setPopularMovies(response.results || []);
+      });
+    } else {
+      MovieService.getMoviesBySearch(searchInput, 1).then((response) => {
+        setSearchMovies(response.results || []);
+      });
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   const router = useRouter();
 
@@ -87,7 +110,9 @@ export default function Home() {
           source={require('assets/home-background1.png')}
           style={styles.backgroundImage}
         />
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
           <View style={styles.parent}>
             <Text style={styles.title}>What would you like to watch?</Text>
             <SearchInput setInput={setSearchInput} containerStyle={{ alignSelf: 'center' }} />
