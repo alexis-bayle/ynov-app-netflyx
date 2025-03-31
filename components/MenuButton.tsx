@@ -3,6 +3,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 
 export default function MenuButton({ onPress }: { onPress: () => void }) {
+  
   return (
     <TouchableOpacity
       onPress={() => {
