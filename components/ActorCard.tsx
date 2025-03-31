@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, Vibration } from 'react-native';
 import { imageUrl } from '~/app/_core/helpers/helper';
 import { Cast } from '~/app/_core/interface/movieInterface';
+
 export default function ActorCard({ actor }: Readonly<{ actor: Cast }>) {
   const [image, setImage] = useState<boolean | undefined>(undefined);
 

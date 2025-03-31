@@ -9,7 +9,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 SplashScreen.preventAutoHideAsync();
@@ -33,14 +32,14 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <StatusBar translucent backgroundColor="transparent" style="light" />
-        <Stack>
-          <Stack.Screen
-            getId={({ params }) => params?.id}
-            name="movieDetail/[id]"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_right',
+            animationTypeForReplace: 'push',
+            contentStyle: { backgroundColor: 'black' },
+          }}
+        />
       </ThemeProvider>
     </QueryClientProvider>
   );

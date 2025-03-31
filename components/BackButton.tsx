@@ -7,7 +7,8 @@ export default function BackButton() {
 
   const onPress = () => {
     Vibration.vibrate(100);
-    router.back();
+    if (router.canGoBack()) router.back();
+    else router.navigate('/');
   };
 
   return (

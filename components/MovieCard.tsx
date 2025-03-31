@@ -1,10 +1,22 @@
 import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
 import { imageUrl } from '~/app/_core/helpers/helper';
 import { Movie } from '~/app/_core/interface/movieInterface';
 
 export default function MovieCard({ movie }: Readonly<{ movie: Movie }>) {
+  const [image, setImage] = useState<boolean | undefined>(undefined);
   const router = useRouter();
+
+  useEffect(() => {
+    Image.prefetch(imageUrl + movie?.poster_path)
+      .then((res) => {
+        setImage(res);
+      })
+      .catch((err) => {
+        setImage(false);
+      });
+  }, []);
 
   function onPress() {
     Vibration.vibrate(100);
@@ -20,7 +32,13 @@ export default function MovieCard({ movie }: Readonly<{ movie: Movie }>) {
       onPress={() => {
         onPress();
       }}>
-      <Image source={{ uri: imageUrl + movie?.poster_path }} style={styles.moviePoster} />
+      <Image
+        source={
+          image !== true ? require('assets/noMovies.png') : { uri: imageUrl + movie?.poster_path }
+        }
+        defaultSource={require('assets/noMovies.png')}
+        style={styles.moviePoster}
+      />
     </TouchableOpacity>
   );
 }
