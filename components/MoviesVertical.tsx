@@ -1,7 +1,8 @@
 import { Movie } from '~/app/_core/interface/movieInterface';
 import MovieCard from './MovieCard';
 import { Box, Text } from '~/theme';
-import { FlatList, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { FlatList, RefreshControl, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { useCallback, useState } from 'react';
 
 export default function MoviesVertical({
   movies = [],
@@ -16,6 +17,15 @@ export default function MoviesVertical({
   page: number;
   setPage: (page: number) => void;
 }>) {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   return (
     <Box style={[containerStyle, styles.container]}>
       <View id="carousel-component" style={styles.carouselContainer}>
@@ -29,6 +39,7 @@ export default function MoviesVertical({
             )}
             horizontal={false}
             numColumns={2}
+            maxToRenderPerBatch={4}
             columnWrapperStyle={styles.columnWrapper}
             contentContainerStyle={{
               paddingBottom: 12,
@@ -37,6 +48,7 @@ export default function MoviesVertical({
             onEndReached={() => {
               setPage(page + 1);
             }}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           />
         )}
         {movies.length === 0 && (

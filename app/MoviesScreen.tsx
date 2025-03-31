@@ -1,5 +1,5 @@
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { ImageBackground, ScrollView, StyleSheet, View } from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, View, RefreshControl } from 'react-native';
 import React, { useCallback, useEffect, useState } from "react";
 import { MovieService } from '~/app/_core/service/movieService';
 import MoviesVertical from '~/components/MoviesVertical';
