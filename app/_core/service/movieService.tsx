@@ -50,4 +50,16 @@ export class MovieService {
         return data;
       });
   }
+
+  /**
+   * Get movies by search input
+   */
+  static async getMoviesBySearch(input: string, page: number): Promise<any> {
+    return this.api
+      .get(`${apiUrl}/search/movie?language=en-US&query=${input}&page=${page}`)
+      .then((res: any) => res.json())
+      .then((data: any) => {
+        return data;
+      });
+  }
 }

@@ -4,13 +4,17 @@ import Svg, { Path } from 'react-native-svg';
 
 export const SearchInput = ({
   containerStyle,
-}: Readonly<{ containerStyle?: StyleProp<ViewStyle> }>) => {
+  setInput,
+}: {
+  containerStyle?: StyleProp<ViewStyle>;
+  setInput: (value: string) => void;
+}) => {
   const styles = useStyles();
 
   return (
     <View style={[styles.container, containerStyle]}>
       <Image source={require('assets/loop.png')} style={styles.searchIcon} />
-      <TextInput placeholder="Search" placeholderTextColor="white" style={styles.input} />
+      <TextInput placeholder="Search" onChangeText={(value) => setInput(value)} placeholderTextColor="white" style={styles.input} />
       <View style={styles.microphoneIcon}>
         <Svg width={12} height={18} viewBox="0 0 12 18" fill="none">
           <Path

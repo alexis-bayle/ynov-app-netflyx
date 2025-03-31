@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Redirect, Stack } from 'expo-router';
+import { Redirect, Stack, useRouter } from 'expo-router';
 import * as NavigationBar from 'expo-navigation-bar';
 import React, { useEffect, useState } from 'react';
 import {
@@ -9,6 +9,7 @@ import {
   ScrollView,
   ImageBackground,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { SearchInput } from '~/components/home/SearchInput';
 import { MovieService } from '../_core/service/movieService';
@@ -17,9 +18,13 @@ import MovieCarousel from '~/components/MovieCarousel';
 export default function Home() {
   const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
   const [newMovies, setNewMovies] = useState([]);
+  const [searchMovies, setSearchMovies] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [redirectToOnboarding, setRedirectToOnboarding] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
+
+  const router = useRouter();
 
   useEffect(() => {
     const checkOnboarding = async () => {
@@ -43,17 +48,24 @@ export default function Home() {
     } else {
       NavigationBar.setVisibilityAsync('hidden');
       NavigationBar.setBehaviorAsync('overlay-swipe');
-  
-      MovieService.getNewMovies().then((response)=>{
+
+      MovieService.getNewMovies().then((response) => {
         setNewMovies(response.results || []);
       });
-      console.log(newMovies);
 
-      MovieService.getPopulardMovies().then((response)=>{
-        setPopularMovies(response.results || [])
+      MovieService.getPopulardMovies().then((response) => {
+        setPopularMovies(response.results || []);
       });
     }
   }, [isOnboarded]);
+
+  useEffect(() => {
+    if (searchInput === '') return;
+
+    MovieService.getMoviesBySearch(searchInput, 1).then((response) => {
+      setSearchMovies(response.results || []);
+    });
+  }, [searchInput]);
 
   if (loading) {
     return (
@@ -78,17 +90,38 @@ export default function Home() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.parent}>
             <Text style={styles.title}>What would you like to watch?</Text>
-            <SearchInput containerStyle={{ alignSelf: 'center' }} />
-            <MovieCarousel
-              movies={newMovies}
-              title="New Movies"
-              containerStyle={{ marginTop: 32 }}
-            />
-            <MovieCarousel
-              movies={popularMovies}
-              title="Popular Movies"
-              containerStyle={{ marginTop: 32 }}
-            />
+            <SearchInput setInput={setSearchInput} containerStyle={{ alignSelf: 'center' }} />
+            {searchInput === '' ? (
+              <>
+                <MovieCarousel
+                  movies={newMovies}
+                  title="New Movies"
+                  containerStyle={{ marginTop: 32 }}
+                />
+                <MovieCarousel
+                  movies={popularMovies}
+                  title="Popular Movies"
+                  containerStyle={{ marginTop: 32 }}
+                />
+              </>
+            ) : (
+              <>
+                <MovieCarousel
+                  movies={searchMovies}
+                  title="Results"
+                  containerStyle={{ marginTop: 32 }}
+                />
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: '/MoviesScreen',
+                      params: { search: searchInput },
+                    })
+                  }>
+                  <Text style={styles.text}>Show more</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </ScrollView>
       </View>
@@ -122,6 +155,15 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     paddingHorizontal: 24,
     paddingTop: 24,
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: 'semibold',
+    color: 'white',
+    textAlign: 'right',
+    marginRight: 18,
+    marginTop: 12,
+    marginBottom: 32,
   },
   loadingContainer: {
     flex: 1,
