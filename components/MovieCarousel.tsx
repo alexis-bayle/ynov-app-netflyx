@@ -1,9 +1,9 @@
 import { Movie } from '~/app/_core/interface/movieInterface';
 import MovieCard from './MovieCard';
 import { Box, Text } from '~/theme';
-import { FlatList, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import React from "react";
-import SkeletonMovieCard from "~/components/SkeletonMovieCard";
+import { FlatList, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import React from 'react';
+import SkeletonMovieCard from '~/components/SkeletonMovieCard';
 
 export default function MovieCarousel({
   movies = [],
@@ -22,7 +22,7 @@ export default function MovieCarousel({
       <Text variant="title" color="white" style={styles.title}>
         {title}
       </Text>
-      { loading ? (
+      {loading ? (
         <View style={styles.carouselContainer}>
           <FlatList
             data={placeholderData}
@@ -55,9 +55,7 @@ export default function MovieCarousel({
             </Text>
           )}
         </View>
-      )
-      }
-
+      )}
     </Box>
   );
 }
