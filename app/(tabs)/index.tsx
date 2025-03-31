@@ -8,14 +8,12 @@ import {
   Text,
   ScrollView,
   ImageBackground,
-  ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
 import { SearchInput } from '~/components/home/SearchInput';
 import { MovieService } from '../_core/service/movieService';
 import MovieCarousel from '~/components/MovieCarousel';
-import MovieCarouselSkeleton from '~/components/MovieCarouselSkeleton';
 
 export default function Home() {
   const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
@@ -111,28 +109,18 @@ export default function Home() {
             <SearchInput setInput={setSearchInput} containerStyle={{ alignSelf: 'center' }} />
             {searchInput === '' ? (
               <>
-                {loading ? (
-                  <>
-                    <MovieCarouselSkeleton title="New Movies" containerStyle={{ marginTop: 32 }} />
-                    <MovieCarouselSkeleton
-                      title="Popular Movies"
-                      containerStyle={{ marginTop: 32 }}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <MovieCarousel
-                      movies={newMovies}
-                      title="New Movies"
-                      containerStyle={{ marginTop: 32 }}
-                    />
-                    <MovieCarousel
-                      movies={popularMovies}
-                      title="Popular Movies"
-                      containerStyle={{ marginTop: 32 }}
-                    />
-                  </>
-                )}
+                <MovieCarousel
+                  movies={newMovies}
+                  title="New Movies"
+                  loading={loading}
+                  containerStyle={{ marginTop: 32 }}
+                />
+                <MovieCarousel
+                  movies={popularMovies}
+                  title="Popular Movies"
+                  loading={loading}
+                  containerStyle={{ marginTop: 32 }}
+                />
               </>
             ) : (
               <>
