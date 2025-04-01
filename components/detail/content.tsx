@@ -44,7 +44,6 @@ export default function Content({
         <BackButton />
         <MenuButton
           onPress={() => {
-            console.log('menu');
             router.navigate('/');
           }}
         />

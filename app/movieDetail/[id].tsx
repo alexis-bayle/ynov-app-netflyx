@@ -37,7 +37,6 @@ export default function MovieDetail() {
   function getData() {
     MovieService.getMovieDetails(Number(params.id))
       .then((response) => {
-        console.log(response.id);
         setMovieData(response);
         setRating(getStarRating(response?.vote_average, 5));
         if (response?.poster_path) {
