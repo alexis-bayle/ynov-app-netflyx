@@ -1,94 +1,60 @@
-import { Dimensions, Image, Linking, RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { Dimensions, Linking, StyleSheet } from 'react-native';
 import React, { useState, useEffect } from 'react';
-
-import { Box, Text, theme } from '~/theme';
-import { MovieService } from '../_core/service/movieService';
-import { Cast, Movie } from '../_core/interface/movieInterface';
-import { LinearGradient } from 'expo-linear-gradient';
-import { getRandomInt, getStarRating, imageUrl } from '../_core/helpers/helper';
-import MovieCarousel from '~/components/MovieCarousel';
-import { router, Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import BackButton from '~/components/BackButton';
-import MenuButton from '~/components/MenuButton';
-import PlayButton from '~/components/PlayButton';
-import ActorCarousel from '~/components/ActorCarousel';
+import { getStarRating, imageUrl } from '../_core/helpers/helper';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import Content from '~/components/detail/content';
 import SkeletonContent from '~/components/detail/skeleton';
+import {
+  useGetCreditsByMovieId,
+  useGetMovieById,
+  useGetRecommendedMoviesByMovieId,
+} from '../_core/query/hooks/movieHooks';
+import { getSize, prefetchImages } from '../_core/helpers/image';
 
 const win = Dimensions.get('window');
 
 export default function MovieDetail() {
   const [image, setImage] = useState<boolean | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(true);
-  const [movieData, setMovieData] = useState<Movie>();
-  const [cast, setCast] = useState<Cast[]>([]);
-  const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
-  const [rating, setRating] = useState('');
   const [posterHeight, setPosterHeight] = useState(win.height * 0.6); // Default height
   const params = useLocalSearchParams();
 
-  const onRefresh = React.useCallback(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      getData();
-    }, 1500);
-  }, []);
+  const {
+    data: movieData,
+    isLoading: isMovieLoading,
+    refetch: onMovieRefresh,
+    isRefetching: isMovieRefetching,
+    isError: isMovieError,
+  } = useGetMovieById(Number(params.id));
+  const {
+    data: recommendedMovies,
+    isLoading: isRecommendedMoviesLoading,
+    refetch: onRecommendedMoviesRefetch,
+  } = useGetRecommendedMoviesByMovieId(Number(params.id));
+  const {
+    data: credits,
+    isLoading: isCreditLoading,
+    refetch: onCreditsRefetch,
+  } = useGetCreditsByMovieId(Number(params.id));
 
-  function getData() {
-    MovieService.getMovieDetails(Number(params.id))
-      .then((response) => {
-        setMovieData(response);
-        setRating(getStarRating(response?.vote_average, 5));
-        if (response?.poster_path) {
-          Image.prefetch(imageUrl + response?.poster_path)
-            .then((res) => {
-              setImage(res);
-            })
-            .catch((err) => {
-              console.error(err);
-              setImage(false);
-            });
-          Image.getSize(imageUrl + response.poster_path, (width, height) => {
-            const aspectRatio = height / width;
-            setPosterHeight(win.width * aspectRatio);
-          });
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      })
-      .finally(() => {
-        MovieService.getRecommendedMoviesByMovieId(Number(params.id))
-          .then((response) => {
-            setRecommendedMovies(response.results || []);
-          })
-          .catch((error) => {
-            console.error('Error:', error);
-          });
+  const rating = movieData?.vote_average ? getStarRating(movieData?.vote_average, 5) : undefined;
 
-        MovieService.getMovieCreditsByMovieId(Number(params.id))
-          .then((response) => {
-            setCast(response.cast || []);
-          })
-          .catch((error) => {
-            console.error('Error:', error);
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
-      });
-  }
+  const onRefresh = () => {
+    onMovieRefresh();
+    onCreditsRefetch();
+    onRecommendedMoviesRefetch();
+  };
 
   useEffect(() => {
-    getData();
-  }, []);
+    setPosterHeight(getSize(win, imageUrl, movieData?.poster_path));
+    prefetchImages(imageUrl, movieData?.poster_path).then((image) => setImage(image));
+  }, [isMovieLoading, isCreditLoading, isRecommendedMoviesLoading]);
 
   function handlePlayClicked() {
     const url = `https://www.google.com/search?q=watch+${movieData?.title}`;
     Linking.openURL(url);
   }
 
-  if (isLoading) {
+  if (isMovieLoading || isCreditLoading || isRecommendedMoviesLoading) {
     return (
       <>
         <Stack.Screen options={{ headerShown: false }} />
@@ -101,11 +67,11 @@ export default function MovieDetail() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <Content
-        isLoading={isLoading}
+        isLoading={isMovieRefetching}
         onRefresh={onRefresh}
         movieData={movieData}
-        cast={cast}
-        recommendedMovies={recommendedMovies}
+        cast={credits.cast}
+        recommendedMovies={recommendedMovies.results}
         rating={rating}
         posterHeight={posterHeight}
         imageUrl={imageUrl}

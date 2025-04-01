@@ -12,39 +12,46 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SearchInput } from '~/components/home/SearchInput';
-import { MovieService } from '../_core/service/movieService';
 import MovieCarousel from '~/components/MovieCarousel';
+import {
+  useGetMoviesBySearch,
+  useGetNewMovies,
+  useGetPopularMovies,
+} from '../_core/query/hooks/movieHooks';
 
 export default function Home() {
   const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
-  const [newMovies, setNewMovies] = useState([]);
-  const [searchMovies, setSearchMovies] = useState([]);
-  const [popularMovies, setPopularMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [redirectToOnboarding, setRedirectToOnboarding] = useState(false);
   const [searchInput, setSearchInput] = useState('');
 
-  const onRefresh = useCallback(() => {
-    setLoading(true);
-    if (searchInput === '') {
-      MovieService.getNewMovies().then((response) => {
-        setNewMovies(response.results || []);
-      });
+  const {
+    data: newMovies,
+    isLoading: isNewMoviesLoading,
+    refetch: onNewMoviesRefetch,
+  } = useGetNewMovies();
+  const {
+    data: popularMovies,
+    isLoading: isPopularMoviesLoading,
+    refetch: onPopularMoviesRefetch,
+  } = useGetPopularMovies();
+  const {
+    data: searchMovies,
+    refetch: onSearchRefetch,
+    isLoading: isSearchMoviesLoading,
+  } = useGetMoviesBySearch(searchInput, 1);
 
-      MovieService.getPopulardMovies().then((response) => {
-        setPopularMovies(response.results || []);
-      });
-    } else {
-      MovieService.getMoviesBySearch(searchInput, 1).then((response) => {
-        setSearchMovies(response.results || []);
-      });
-    }
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+  const onRefresh = useCallback(() => {
+    onNewMoviesRefetch();
+    onPopularMoviesRefetch();
+    onSearchRefetch();
   }, []);
 
+  const isLoading = isNewMoviesLoading || isPopularMoviesLoading || isSearchMoviesLoading;
   const router = useRouter();
+
+  useEffect(() => {
+    onSearchRefetch();
+  }, [searchInput]);
 
   useEffect(() => {
     const checkOnboarding = async () => {
@@ -53,10 +60,6 @@ export default function Home() {
         setIsOnboarded(onboarded === 'true');
       } catch (error) {
         console.error("Erreur lors de la récupération de l'onboarding :", error);
-      } finally {
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
       }
     };
     checkOnboarding();
@@ -70,27 +73,24 @@ export default function Home() {
     } else {
       NavigationBar.setVisibilityAsync('hidden');
       NavigationBar.setBehaviorAsync('overlay-swipe');
-
-      MovieService.getNewMovies().then((response) => {
-        setNewMovies(response.results || []);
-      });
-
-      MovieService.getPopulardMovies().then((response) => {
-        setPopularMovies(response.results || []);
-      });
     }
   }, [isOnboarded]);
 
-  useEffect(() => {
-    if (searchInput === '') return;
-
-    MovieService.getMoviesBySearch(searchInput, 1).then((response) => {
-      setSearchMovies(response.results || []);
-    });
-  }, [searchInput]);
-
   if (redirectToOnboarding) {
     return <Redirect href="/onboarding" />; // Affiche la redirection si nécessaire
+  }
+
+  if (
+    isNewMoviesLoading ||
+    isPopularMoviesLoading ||
+    isOnboarded === null ||
+    redirectToOnboarding
+  ) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
   }
 
   return (
@@ -103,32 +103,48 @@ export default function Home() {
         />
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}>
+          refreshControl={<RefreshControl refreshing={isLoading} onRefresh={onRefresh} />}>
           <View style={styles.parent}>
             <Text style={styles.title}>What would you like to watch?</Text>
-            <SearchInput setInput={setSearchInput} containerStyle={{ alignSelf: 'center' }} />
+            <SearchInput
+              setInput={(value) => {
+                setSearchInput(value);
+                onSearchRefetch();
+              }}
+              containerStyle={{ alignSelf: 'center' }}
+            />
             {searchInput === '' ? (
               <>
                 <MovieCarousel
-                  movies={newMovies}
+                  movies={newMovies.results}
                   title="New Movies"
-                  loading={loading}
+                  loading={isLoading}
                   containerStyle={{ marginTop: 32 }}
                 />
                 <MovieCarousel
-                  movies={popularMovies}
+                  movies={popularMovies.results}
                   title="Popular Movies"
-                  loading={loading}
+                  loading={isLoading}
                   containerStyle={{ marginTop: 32 }}
                 />
               </>
             ) : (
               <>
-                <MovieCarousel
-                  movies={searchMovies}
-                  title="Results"
-                  containerStyle={{ marginTop: 32 }}
-                />
+                {!isSearchMoviesLoading && (
+                  <MovieCarousel
+                    movies={searchMovies.results}
+                    loading={isLoading}
+                    title="Results"
+                    containerStyle={{ marginTop: 32 }}
+                  />
+                )}
+                {isSearchMoviesLoading && (
+                  <MovieCarousel
+                    loading={isLoading}
+                    title="Results"
+                    containerStyle={{ marginTop: 32 }}
+                  />
+                )}
                 <TouchableOpacity
                   onPress={() =>
                     router.push({

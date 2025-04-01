@@ -6,12 +6,12 @@ import React from 'react';
 import SkeletonMovieCard from '~/components/SkeletonMovieCard';
 
 export default function MovieCarousel({
-  movies = [],
   title,
   containerStyle = {},
   loading = false,
+  movies = [],
 }: Readonly<{
-  movies: Movie[];
+  movies?: Movie[] | undefined;
   title: string;
   containerStyle?: StyleProp<ViewStyle>;
   loading?: boolean;
@@ -22,7 +22,7 @@ export default function MovieCarousel({
       <Text variant="title" color="white" style={styles.title}>
         {title}
       </Text>
-      {loading ? (
+      {loading || movies == undefined ? (
         <View style={styles.carouselContainer}>
           <FlatList
             data={placeholderData}

@@ -8,6 +8,7 @@ import ActorCarousel from '../ActorCarousel';
 import MovieCarousel from '../MovieCarousel';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Cast, Movie } from '~/app/_core/interface/movieInterface';
+import { useEffect } from 'react';
 
 interface ContentProps {
   isLoading: boolean;
@@ -48,7 +49,6 @@ export default function Content({
           }}
         />
         <Image
-          // source={{ uri: imageUrl + movieData?.poster_path }}
           source={
             image !== true
               ? require('assets/noMovies.png')

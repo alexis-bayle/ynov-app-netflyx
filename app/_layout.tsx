@@ -1,5 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeProvider } from '@shopify/restyle';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { theme } from 'theme';
@@ -12,6 +15,10 @@ export const unstable_settings = {
   initialRouteName: '(tabs)',
 };
 SplashScreen.preventAutoHideAsync();
+
+const asyncStoragePersister = createAsyncStoragePersister({
+  storage: AsyncStorage,
+});
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -29,7 +36,9 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister: asyncStoragePersister }}>
       <ThemeProvider theme={theme}>
         <StatusBar translucent backgroundColor="transparent" style="light" />
         <Stack
@@ -41,6 +50,6 @@ export default function RootLayout() {
           }}
         />
       </ThemeProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }
